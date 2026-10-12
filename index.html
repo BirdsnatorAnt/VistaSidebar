@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Vista Sidebar — нативні гаджети для Windows</title>
+<link rel="icon" href="icon.ico">
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    font-family:"Segoe UI", Tahoma, sans-serif;
+    color:#eaf2ff;
+    min-height:100vh;
+    background:
+      radial-gradient(1200px 700px at 70% -10%, #2a6ecb 0%, rgba(42,110,203,0) 60%),
+      radial-gradient(900px 600px at 10% 110%, #1b3f77 0%, rgba(27,63,119,0) 65%),
+      linear-gradient(160deg,#0a1526 0%, #102543 50%, #0a1526 100%);
+    background-attachment: fixed;
+  }
+  header {
+    padding:26px 20px;
+    text-align:center;
+    background:linear-gradient(rgba(255,255,255,.10), rgba(255,255,255,.03));
+    border-bottom:1px solid rgba(255,255,255,.14);
+    backdrop-filter: blur(10px);
+  }
+  h1 { font-size:34px; font-weight:600; letter-spacing:.5px;
+       text-shadow:0 2px 10px rgba(0,0,0,.6); }
+  h1 span { color:#8ec3ff; }
+  header p { margin-top:8px; color:#bcd3f2; font-size:16px; }
+  .wrap { max-width:1040px; margin:0 auto; padding:40px 20px 60px; }
+
+  .cta {
+    display:flex; gap:16px; align-items:center; justify-content:center;
+    flex-wrap:wrap; margin-bottom:44px;
+  }
+  .btn {
+    display:inline-block; padding:15px 34px; border-radius:10px;
+    font-size:18px; font-weight:600; text-decoration:none; color:#08192f;
+    background:linear-gradient(#ffe9a8,#f5c14b 55%, #e2a726);
+    border:1px solid #b9861a;
+    box-shadow:0 6px 18px rgba(0,0,0,.45), inset 0 1px 0 rgba(255,255,255,.7);
+    transition:transform .12s ease, filter .12s ease;
+  }
+  .btn:hover { transform:translateY(-2px); filter:brightness(1.06); }
+  .btn.ghost {
+    background:linear-gradient(rgba(255,255,255,.16),rgba(255,255,255,.06));
+    color:#eaf2ff; border:1px solid rgba(255,255,255,.30);
+    box-shadow:0 6px 18px rgba(0,0,0,.35), inset 0 1px 0 rgba(255,255,255,.25);
+  }
+  .meta { width:100%; text-align:center; color:#93aed4; font-size:13px; margin-top:4px; }
+
+  .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(230px,1fr)); gap:18px; }
+  .card {
+    background:linear-gradient(rgba(255,255,255,.10), rgba(255,255,255,.04));
+    border:1px solid rgba(255,255,255,.15);
+    border-radius:12px; padding:20px 18px;
+    box-shadow:0 8px 24px rgba(0,0,0,.35);
+    backdrop-filter: blur(6px);
+  }
+  .card h3 { font-size:17px; margin-bottom:7px; color:#ffe6a6; font-weight:600; }
+  .card p { font-size:14.5px; line-height:1.55; color:#cfe0f7; }
+
+  h2 { font-size:24px; margin:46px 0 18px; font-weight:600;
+       text-shadow:0 2px 8px rgba(0,0,0,.5); }
+  ul.feat { list-style:none; display:grid; grid-template-columns:repeat(auto-fit,minmax(300px,1fr)); gap:10px 26px; }
+  ul.feat li { padding:7px 0 7px 28px; position:relative; color:#d7e6fb; font-size:15.5px; }
+  ul.feat li::before { content:"✔"; position:absolute; left:0; top:7px; color:#7ee08a; font-weight:700; }
+
+  .note {
+    margin-top:40px; padding:16px 20px; border-radius:10px; font-size:14.5px;
+    background:rgba(255,255,255,.07); border:1px solid rgba(255,255,255,.14);
+    color:#bcd3f2; line-height:1.6;
+  }
+  footer {
+    text-align:center; padding:26px 20px 40px; color:#7f9bc4; font-size:13.5px;
+    border-top:1px solid rgba(255,255,255,.10);
+  }
+  footer a { color:#9ec9ff; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Vista <span>Sidebar</span></h1>
+  <p>Оригінальні гаджети Windows Vista Sidebar — нативний C++, без HTML і браузера</p>
+</header>
+
+<div class="wrap">
+
+  <div class="cta">
+    <a class="btn" href="windowsSidebarSetup.exe" download>⬇ Завантажити установник</a>
+    <a class="btn ghost" href="sidebar.msi" download>Скачати .msi</a>
+    <div class="meta">windowsSidebarSetup.exe · 4.1 МБ · Windows 7 / 10 / 11 (x64) · безкоштовно</div>
+  </div>
+
+  <div class="grid">
+    <div class="card"><h3>🎞 SlideShow</h3><p>Плавні переходи між фото, рамка, вибір своєї папки або вбудований Tulip.</p></div>
+    <div class="card"><h3>🌦 Погода</h3><p>Реальні дані: температура, стан неба, вітер та прогноз на 3 дні.</p></div>
+    <div class="card"><h3>💰 Валюти</h3><p>Курси CHF, USD, EUR та інших до гривні з живого курсу.</p></div>
+    <div class="card"><h3>🧠 Picture Puzzle</h3><p>Класичний пазл з картинкою — збирай по квадратиках.</p></div>
+    <div class="card"><h3>📅 Календар</h3><p>Місяць, дата й день тижня у справжньому вигляді Vista.</p></div>
+    <div class="card"><h3>⚙️ Процесор</h3><p>Навантаження CPU у реальному часі, оновлення щосекунди.</p></div>
+    <div class="card"><h3>🕒 Годинник</h3><p>Аналоговий циферблат з плавною стрілкою секунд.</p></div>
+    <div class="card"><h3>🗂 Бічна панель</h3><p>Панель зліва з усіма гаджетами — розташована за вікнами.</p></div>
+  </div>
+
+  <h2>Що всередині</h2>
+  <ul class="feat">
+    <li>Нативний C++ + GDI+, жодного WebView2 та Chromium</li>
+    <li>Оригінальні PNG-зображення з пакетів <code>.Gadget</code></li>
+    <li>Гаджети — окремі вікна: закриєш панель — вони залишаються</li>
+    <li>Перетягуй гаджети куди завгодно; панель закріплена</li>
+    <li>Правий клік по гаджету → <b>Close gadget</b></li>
+    <li>Усі вікна «за» звичайними вікнами, без topmost</li>
+    <li>Конфіг і дані у <code>%APPDATA%\VistaSidebar</code></li>
+    <li>Автозапуск разом з Windows (налаштовується в установці)</li>
+  </ul>
+
+  <div class="note">
+    <b>Встановлення:</b> запусти <code>windowsSidebarSetup.exe</code> → Install.
+    Після встановлення панель з'явиться ліворуч, гаджети — поруч.
+    <br><b>Видалення:</b> Панель керування → «Програми та компоненти» → Vista Sidebar.
+  </div>
+
+</div>
+
+<footer>
+  Vista Sidebar · нативна реконструкція легендарних гаджетів<br>
+  <a href="windowsSidebarSetup.exe" download>windowsSidebarSetup.exe</a> ·
+  <a href="sidebar.msi" download>sidebar.msi</a>
+</footer>
+</body>
+</html>
