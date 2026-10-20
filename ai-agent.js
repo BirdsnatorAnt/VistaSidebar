@@ -1,63 +1,54 @@
 /* ---------------------------------------------------------------------------
-   Vista Sidebar - ИИ-помічник на сайті.
+   Vista Sidebar - ИИ-помічник (справжній чат з мовною моделлю).
 
-   Задача агента: вислухати проблему/баг, оформити ее в готовый отчет и
-   отправить владельцу (через GitHub Issue - туда приходят уведомления).
+   Запити йдуть на endpoint з agent-config.js (OpenAI / Ollama / LM Studio /
+   локальний проксі tools\agent_server.py). Якщо сервер недоступний або не
+   заданий - працює офлайн-база знань, щоб чат не був мертвим.
+
+   Розмова з багом: помічник збирає деталі й показує кнопку «Надіслати баг»
+   (GitHub Issue) - повідомлення приходить розробникові.
    --------------------------------------------------------------------------- */
 (function () {
-  var OWNER_REPO = "BirdsnatorAnt/VistaSidebar";
+  var CFG = window.VISTA_AGENT || {};
+  var ENDPOINT = CFG.endpoint || "";
+  var API_KEY = CFG.apiKey || "";
+  var MODEL = CFG.model || "gpt-4o-mini";
+  var REPO = CFG.repo || "BirdsnatorAnt/VistaSidebar";
   var APP_VERSION = "1.2";
+
   var KB = [
-    {
-      keys: ["встанов", "install", "постав", "запуст"],
-      answer: "Установка проста: запусти windowsSidebarSetup.exe → Install. Програма стає в " +
+    { keys: ["встанов", "install", "постав", "запуст"],
+      answer: "Установка: запусти windowsSidebarSetup.exe → Install. Програма стає в " +
               "C:\\Program Files\\Vista Sidebar, запускається разом з Windows і одразу показує " +
-              "вікно «Віджети» з усіма гаджетами. Видалення - Панель керування → Програми та компоненти."
-    },
-    {
-      keys: ["налашт", "config", "де зберіга", "дані", "config.txt"],
-      answer: "Усі налаштування лежать у %APPDATA%\\VistaSidebar:\n" +
-              "• config.txt - список віджетів на столі (формат: GadgetName, а другий «GadgetName#2»);\n" +
-              "• settings\\<Гаджет>.txt - налаштування конкретного гаджета (напр. скін ЦП-метра);\n" +
-              "• settings\\Clock_Gadget.txt - тема годинника (themeID)."
-    },
-    {
-      keys: ["гаджет", "додати", "витяг", "перетяг", "панел", "вікно віджет"],
-      answer: "Усі гаджети живуть у вікні «Віджети» (Ctrl+Alt+W або трей-меню). Там кожен гаджет - " +
-              "плитка з іконкою. Перетягніть іконку на робочий стіл - віджет оживе на місці. " +
-              "Подвійний клік по плитці теж створює віджет. Скільки завгодно однакових віджетів можна " +
-              "поставити - кожен має власні налаштування. ПКМ по віджету: «Опції», «Зберегти іконку», " +
-              "«Закрити віджет»."
-    },
-    {
-      keys: ["скін", "шкім", "skin", "циферблат", "тема", "apple", "black", "pumpkin"],
-      answer: "Скіни - у налаштуваннях самого гаджета: ПКМ по віджету → «Опції» → стрілки ◀ ▶ " +
-              "та лічильник «1 з 9». У ЦП-метра 8 скінів (Стандартний, Apple, Black, Phantom, Blue, " +
-              "Green, Red, Yellow), у годинника - 13 циферблатів, включно з новорічними " +
-              "(3 різдвяні + гарбузова ніч). Перегляд показує гаджет у реальному вигляді."
-    },
-    {
-      keys: ["нов", "оновлен", "changelog", "release", "верс"],
-      answer: null // answered from the updates feed
-    },
-    {
-      keys: ["швидк", "performance", "тормоз", "fps", "cpu"],
-      answer: "Усі гаджети - нативні C++/GDI+, без браузера, тому вони майже не впливають на " +
-              "продуктивність. Найважчі - погода, акції та слайдшоу (вони оновлюють дані з мережі)."
-    },
-    {
-      keys: ["мови", "language", "ukrain", "ru", "переклад"],
-      answer: "Мова інтерфейсу зараз англійська в діалогах гаджетів і українська у вікні «Віджети». " +
-              "Повний український переклад усіх діалогів - у планах."
-    }
+              "вікно «Віджети» з усіма гаджетами." },
+    { keys: ["налашт", "config", "де зберіга", "дані"],
+      answer: "Усі налаштування у %APPDATA%\\VistaSidebar:\n" +
+              "• config.txt - список віджетів на столі (GadgetName, друга копія - GadgetName#2);\n" +
+              "• settings\\<Гаджет>.txt - налаштування конкретного гаджета (скін ЦП-метра, тема годинника)." },
+    { keys: ["гаджет", "додати", "перетяг", "панел", "вікно віджет", "скільки"],
+      answer: "Усі гаджети - у вікні «Віджети» (Ctrl+Alt+W або трей-меню). Кожен гаджет - плитка з " +
+              "іконкою. Перетягніть іконку на робочий стіл - віджет оживе на місці, подвійний клік теж " +
+              "створює його. Одинакових віджетів можна поставити скільки завгодно, кожен має свій скін." },
+    { keys: ["скін", "шкім", "skin", "циферблат", "тема", "apple", "black", "pumpkin", "гарбуз"],
+      answer: "Скіни - у налаштуваннях віджета: ПКМ → «Опції» → стрілки ◀ ▶ і лічильник «1 з 9». " +
+              "У ЦП-метра 8 скінів (Стандартний, Apple, Black, Phantom, Blue, Green, Red, Yellow), " +
+              "у годинника - 13 циферблатів, включно з новорічними (3 різдвяні + гарбузова ніч)." },
+    { keys: ["нов", "оновлен", "changelog", "release", "верс"],
+      answer: null },
+    { keys: ["швидк", "performance", "тормоз", "fps"],
+      answer: "Усі гаджети - нативні C++/GDI+, без браузера, тому майже не впливають на " +
+              "продуктивність. Найважчі - погода, акції та слайдшоу (вони беруть дані з мережі)." }
   ];
 
-  var BUG_WORDS = ["помилк", "баг", "не працю", "не работа", "крашит", "crash", "помилка", "вилет", "завис", "глюк", "не показу"];
-  var DONE_WORDS = ["готово", "done", "все", "більше нічого", "закінчити"];
+  var BUG_WORDS = ["помилк", "баг", "не працю", "не работа", "крашит", "crash", "вилет",
+                   "завис", "глюк", "не показу", "не відкрива", "не малює", "чорн"];
+  var DONE_WORDS = ["готово", "done", "більше нічого", "все описав"];
 
-  var fab, panel, log, quick, input, form;
-  var report = null;      // { title, steps, version, os }
-  var mode = "chat";      // "chat" | "report"
+  var fab, panel, log, quick, input, form, statusEl;
+  var history = [];      // [{role, content}]
+  var reportLines = [];  // зібрані рядки звіту
+  var online = false;    // чи відповідає справжня модель
+  var busy = false;
 
   function el(tag, cls, html) {
     var e = document.createElement(tag);
@@ -66,9 +57,22 @@
     return e;
   }
 
+  function escapeHtml(s) {
+    return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+  }
+
+  function md(text) {
+    var s = escapeHtml(text || "");
+    s = s.replace(/\*\*([^*]+)\*\*/g, "<b>$1</b>");
+    s = s.replace(/`([^`]+)`/g, "<code>$1</code>");
+    return s.replace(/\n/g, "<br>");
+  }
+
   function add(who, text, buttons) {
     var row = el("div", "ai-msg ai-" + who);
-    row.appendChild(el("div", "ai-bubble", escapeHtml(text).replace(/\n/g, "<br>")));
+    var bubble = el("div", "ai-bubble");
+    bubble.innerHTML = who === "user" ? escapeHtml(text) : md(text);
+    row.appendChild(bubble);
     log.appendChild(row);
     if (buttons && buttons.length) {
       var bar = el("div", "ai-btns");
@@ -82,8 +86,17 @@
     log.scrollTop = log.scrollHeight;
   }
 
-  function escapeHtml(s) {
-    return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+  function thinking(on) {
+    if (on) {
+      var row = el("div", "ai-msg ai-bot");
+      row.id = "aiTyping";
+      row.innerHTML = '<div class="ai-bubble ai-typing"><i></i><i></i><i></i></div>';
+      log.appendChild(row);
+      log.scrollTop = log.scrollHeight;
+    } else {
+      var t = document.getElementById("aiTyping");
+      if (t) t.parentNode.removeChild(t);
+    }
   }
 
   function quickButtons(items) {
@@ -95,22 +108,18 @@
     });
   }
 
+  function setStatus(txt, cls) {
+    statusEl.textContent = txt;
+    statusEl.className = "ai-status " + (cls || "");
+  }
+
   function has(text, words) {
     var t = text.toLowerCase();
     for (var i = 0; i < words.length; i++) if (t.indexOf(words[i]) >= 0) return true;
     return false;
   }
 
-  function answer(text) {
-    for (var i = 0; i < KB.length; i++) {
-      if (has(text, KB[i].keys)) {
-        if (KB[i].answer) return KB[i].answer;
-        return updatesAnswer();
-      }
-    }
-    return null;
-  }
-
+  // ---------------------------------------------------------------- offline KB
   function updatesAnswer() {
     var list = (window.VISTA_UPDATES || []);
     if (!list.length) return "Оновлень поки немає.";
@@ -119,30 +128,66 @@
       out += "• v" + u.version + " (" + u.date + ") - " + u.title + "\n";
       (u.items || []).slice(0, 3).forEach(function (i) { out += "   - " + i + "\n"; });
     });
-    out += "Повний список - внизу сторінки.";
     return out;
   }
 
-  function buildReport() {
-    var r = report;
-    var body = "**Проблема**\n\n" + (r.title || r.details) + "\n\n" +
-               "**Кроки відтворення**\n\n" + (r.steps || "не описані") + "\n\n" +
-               "**Версія Vista Sidebar:** " + r.version + "\n\n" +
-               "**Windows:** " + r.os + "\n\n" +
-               "_(Створено через ИИ-помічника на сайте)_\n";
-    return body;
+  function offlineAnswer(text) {
+    for (var i = 0; i < KB.length; i++)
+      if (has(text, KB[i].keys)) return KB[i].answer !== null ? KB[i].answer : updatesAnswer();
+    return null;
+  }
+
+  // ------------------------------------------------------------------- chat API
+  function extractAnswer(data) {
+    if (!data) return "";
+    if (data.choices && data.choices[0] && data.choices[0].message)
+      return data.choices[0].message.content || "";       // OpenAI / vLLM
+    if (data.message && data.message.content)
+      return data.message.content || "";                   // Ollama
+    if (data.response) return data.response;                // ollama /api/generate
+    return "";
+  }
+
+  function askModel(text) {
+    return fetch(ENDPOINT, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer " + API_KEY
+      },
+      body: JSON.stringify({
+        model: MODEL,
+        stream: false,
+        messages: [{ role: "system", content: CFG.system || "" }].concat(history)
+      })
+    }).then(function (r) {
+      if (!r.ok) throw new Error("HTTP " + r.status);
+      return r.json();
+    }).then(function (data) {
+      var answer = extractAnswer(data);
+      if (!answer) throw new Error("empty answer");
+      return answer;
+    });
+  }
+
+  // -------------------------------------------------------------------- баг-репорт
+  function reportText() {
+    var lines = reportLines.slice();
+    if (!lines.length) return "";
+    return lines.join("\n");
   }
 
   function openIssue() {
-    var body = buildReport();
-    var url = "https://github.com/" + OWNER_REPO + "/issues/new?title=" +
-              encodeURIComponent("[баг] " + (report.title || "Проблема з гаджетом")) +
+    var body = reportText() || "Проблема з гаджетом Vista Sidebar.\n\n(Опис відсутній - додайте деталі в чаті.)";
+    var title = "[" + (CFG.name || "Vista Sidebar") + "] баг з гаджетом";
+    var url = "https://github.com/" + REPO + "/issues/new?title=" + encodeURIComponent(title) +
               "&body=" + encodeURIComponent(body);
     window.open(url, "_blank", "noopener");
   }
 
   function copyReport() {
-    var text = buildReport();
+    var text = reportText();
+    if (!text) { add("bot", "Звіт поки порожній - розкажіть про проблему детальніше."); return; }
     if (navigator.clipboard && navigator.clipboard.writeText) {
       navigator.clipboard.writeText(text).then(function () {
         add("bot", "Звіт скопійовано. Вставте його в будь-який месенджер або лист - і я виправлю проблему.");
@@ -163,43 +208,64 @@
     ];
   }
 
-  function startReport(text) {
-    mode = "report";
-    report = {
-      title: text.length > 120 ? text.slice(0, 117) + "..." : text,
-      steps: "", version: APP_VERSION, os: "Windows (не вказано)"
-    };
-    add("bot", "Зрозумів, це схоже на баг. Опишіть детальніше - що робили, що очікували і що " +
-              "побачили замість цього. Якщо треба, додайте версію Windows (напр. Windows 11 23H2).",
-        reportButtons());
-    quickButtons([
-      { label: "Вже описано, сформувати звіт" }
-    ]);
+  function collectReport(text) {
+    reportLines.push("- " + text);
+    var os = text.match(/windows\s*\d+(\.\d+)?/i);
+    var ver = text.match(/v?\d+\.\d+(\.\d+)?/);
+    var env = [];
+    if (os) env.push(os[0]);
+    env.push("Vista Sidebar " + APP_VERSION);
+    reportLines.push("СЕРЕДОВИЩЕ: " + env.join(", "));
   }
 
-  function continueReport(text) {
-    if (has(text, DONE_WORDS)) {
-      add("bot", "Ось готовий звіт - надішліть його, і я візьму проблему в роботу:", reportButtons());
-      return;
-    }
-    report.steps += (report.steps ? "\n" : "") + "- " + text;
-    var os = text.match(/windows\s*\d+(\.\d+)?(\s*\w+)?/i);
-    if (os) report.os = os[0];
-    add("bot", "Записав. Далі ще щось важливе? Коли все - натисніть «Вже описано, сформувати звіт».",
-        reportButtons());
-  }
-
+  // ------------------------------------------------------------------- головний потік
   function submitText(text) {
     text = (text || "").trim();
-    if (!text) return;
+    if (!text || busy) return;
     add("user", text);
+    history.push({ role: "user", content: text });
+    busy = true;
+    input.disabled = true;
 
-    setTimeout(function () {
-      if (mode === "report") { continueReport(text); return; }
-      if (has(text, BUG_WORDS)) { startReport(text); return; }
-      var a = answer(text);
-      if (a) { add("bot", a); return; }
-      add("bot", "Не зовсім зрозумів. Ось що я вмію:", null);
+    var bug = has(text, BUG_WORDS);
+    if (bug) collectReport(text);
+
+    if (!ENDPOINT) {
+      setTimeout(function () { answerOffline(text, bug); }, 300);
+      return;
+    }
+
+    thinking(true);
+    askModel(text).then(function (answer) {
+      thinking(false);
+      online = true;
+      setStatus("онлайн · " + MODEL, "on");
+      history.push({ role: "assistant", content: answer });
+      add("bot", answer, bug ? reportButtons() : null);
+      if (bug) {
+        add("bot", "Якщо це справді баг - натисніть «Надіслати баг», повідомлення прийде мені " +
+                   "в GitHub, і я виправлю. Або допишіть деталі сюди.", reportButtons());
+      }
+    }).catch(function (err) {
+      thinking(false);
+      online = false;
+      setStatus("офлайн · база знань", "off");
+      add("bot", "Мовна модель зараз недоступна (" + (err && err.message ? err.message : "помилка") +
+                 "). Відповідаю з локальної бази знань.");
+      answerOffline(text, bug);
+    }).then(function () {
+      busy = false;
+      input.disabled = false;
+      input.focus();
+    });
+  }
+
+  function answerOffline(text, bug) {
+    var a = offlineAnswer(text);
+    if (a) {
+      add("bot", a, bug ? reportButtons() : null);
+    } else {
+      add("bot", "Не зовсім зрозумів. Ось що я вмію:");
       quickButtons([
         { label: "Як встановити?" },
         { label: "Де налаштування?" },
@@ -208,14 +274,21 @@
         { label: "Що нового?" },
         { label: "Помилка з гаджетом" }
       ]);
-    }, 350);
+    }
+    if (bug) {
+      add("bot", "Опишіть детальніше: що робили, що очікували, що побачили, версія Windows. " +
+                 "Якщо все - надішліть звіт кнопкою нижче.", reportButtons());
+    }
+    busy = false;
+    input.disabled = false;
   }
 
+  // --------------------------------------------------------------------- інтерфейс
   function build() {
     fab = el("button", "ai-fab");
     fab.id = "aiFab";
     fab.innerHTML = '<span class="ai-fab-dot"></span>Помічник';
-    fab.title = "ІІ-помічник Vista Sidebar";
+    fab.title = "ИИ-помічник Vista Sidebar";
     fab.onclick = function () {
       panel.classList.toggle("ai-open");
       if (panel.classList.contains("ai-open")) {
@@ -229,6 +302,7 @@
           { label: "Що нового?" },
           { label: "Помилка з гаджетом" }
         ]);
+        input.focus();
       }
     };
     document.body.appendChild(fab);
@@ -236,11 +310,14 @@
     panel = el("div", "ai-panel");
     panel.id = "aiPanel";
     var head = el("div", "ai-head");
-    head.innerHTML = '<span class="ai-title">Vista Sidebar · помічник</span>';
+    head.innerHTML = '<span class="ai-title">' + escapeHtml(CFG.name || "Vista Sidebar · помічник") + "</span>";
     var close = el("button", "ai-x", "✕");
     close.onclick = function () { panel.classList.remove("ai-open"); };
     head.appendChild(close);
     panel.appendChild(head);
+
+    statusEl = el("div", "ai-status", ENDPOINT ? "підключення..." : "офлайн · база знань");
+    panel.appendChild(statusEl);
 
     log = el("div", "ai-log");
     panel.appendChild(log);
@@ -265,6 +342,8 @@
     };
     panel.appendChild(form);
     document.body.appendChild(panel);
+
+    if (!ENDPOINT) setStatus("офлайн · база знань", "off");
   }
 
   function init() {
