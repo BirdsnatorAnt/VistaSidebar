@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0">
+  <channel>
+    <title>Vista Sidebar - оновлення</title>
+    <link>https://github.com/BirdsnatorAnt/VistaSidebar</link>
+    <description>Нові версії Vista Sidebar: гаджети, скіни та фічі</description>
+    <language>uk</language>
+    <item>
+      <title>v1.2 - Вікно «Віджети», скіни та необмежена кількість гаджетів</title>
+      <description><![CDATA[<ul><li>Нове вікно «Віджети» - галерея всіх гаджетів як у Windows 7 Sidebar: плитки з іконками, пошук, навігація сторінками, рядок «Показати подробності».</li><li>Гаджети більше не сидять на панелі: перетягніть іконку з вікна «Віджети» на робочий стіл - віджет оживе на місці.</li><li>ЦП-метр отримав 8 скінів (Стандартний, Apple, Black, Phantom, Blue, Green, Red, Yellow) - перемикаються у ПКМ → «Опції», з живим переглядом.</li><li>Годинник: 4 нові новорічні скіни - три різдвяні циферблати та гарбузова ніч.</li><li>Тепер можна поставити на стіл будь-яку кількість однакових віджетів, і кожна копія має власні налаштування (свій скін).</li><li>Віджети не зникають, коли закрити панель - вони лишаються на робочому столі.</li><li>Іконку будь-якого віджета можна витягнути (ПКМ → «Зберегти іконку»).</li><li>Новий установник windowsSidebarSetup.exe (1.2).</li></ul>]]></description>
+      <pubDate>Tue, 20 Oct 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">vista-sidebar-1.2</guid>
+    </item>
+    <item>
+      <title>v1.1 - Нативні гаджети без браузера</title>
+      <description><![CDATA[<ul><li>Увесь арт гаджетів пакується в sidebarAssets.dll - встановлення ставить лише 2 файли.</li><li>Гаджети плавно з&apos;їжджаються на місце, коли хтось закривається.</li><li>Гаджети завжди залишаються за звичайними вікнами (як у справжній Vista).</li><li>Слайдшоу показує вбудований зразок Tulip.jpg.</li><li>Виправлено краші 0xC0000005 / 0xC0000409.</li><li>Прибрано RSS-гаджет (не працював без мережі).</li></ul>]]></description>
+      <pubDate>Mon, 05 Oct 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">vista-sidebar-1.1</guid>
+    </item>
+    <item>
+      <title>v1.0 - Перша публічна версія</title>
+      <description><![CDATA[<ul><li>Нативний C++ + GDI+ без WebView2.</li><li>Годинник, календар, CPU-метр, валюти, погода, слайдшоу, пазл, кошик, нотатки, акції.</li><li>Автозапуск разом з Windows.</li></ul>]]></description>
+      <pubDate>Sun, 20 Sep 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">vista-sidebar-1.0</guid>
+    </item>
+  </channel>
+</rss>
