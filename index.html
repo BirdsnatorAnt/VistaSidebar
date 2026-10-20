@@ -279,8 +279,8 @@
       <input id="submail" type="email" placeholder="ваша пошта (необов'язково)">
       <button class="btn small ghost" id="subbtn">Підписатися</button>
     </div>
-    <div class="subnote" id="submsg">Форма підписки готує лист і відкриває вашу поштову програму —
-      надішліть його, і я додам вас у список оновлень.</div>
+    <div class="subnote" id="submsg">RSS - найпростіший спосіб: підпишіться будь-якою RSS-читалкою.
+      Форма нижче відкриває GitHub- запит - надішліть його, і я додам вас у список оновлень.</div>
   </div>
 
   <h2>Тарифи</h2>
@@ -377,11 +377,13 @@
   btn.addEventListener('click', function () {
     var m = (mail.value || '').trim();
     if (!m) { msg.textContent = 'Введіть пошту, щоб я надіслав вам лист про нові версії.'; return; }
-    var body = 'Прошу додати мене у список оновлень Vista Sidebar.\n\nПошта: ' + m + '\nСайт: ' + location.href;
-    location.href = 'mailto:support@vista-sidebar.local?subject=' +
-                    encodeURIComponent('Підписка на оновлення Vista Sidebar') +
-                    '&body=' + encodeURIComponent(body);
-    msg.textContent = 'Відкриваю вашу поштову програму - надішліть готовий лист і я додам вас у список.';
+    var body = 'Прошу додати мене у список оновлень Vista Sidebar.\n\nПошта: ' + m +
+               '\nСайт: ' + location.href;
+    var url = 'https://github.com/BirdsnatorAnt/VistaSidebar/issues/new?title=' +
+              encodeURIComponent('[підписка] Vista Sidebar - оновлення') +
+              '&body=' + encodeURIComponent(body);
+    window.open(url, '_blank', 'noopener');
+    msg.textContent = 'Відкриваю GitHub - надішліть запит, і я додам вас у список оновлень.';
   });
 })();
 </script>
